@@ -4,8 +4,7 @@ import {
 } from '@/services/beanapi-backend/interfaceInfoController';
 import {PageContainer} from '@ant-design/pro-components';
 
-import {Button, Card, Descriptions, Divider, Form, message, Spin} from 'antd';
-import TextArea from 'antd/es/input/TextArea';
+import {Button, Card, Descriptions, Divider, Form, Input, message} from 'antd';
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router';
 import {getFreeInterfaceCountUsingPOST} from "@/services/beanapi-backend/userInterfaceInfoController";
@@ -136,10 +135,10 @@ const Index: React.FC = () => {
         )}
       </Card>
       {/*<Divider/>*/}
-      <Card title="在线测试">
+      <Card title="在线测试" loading={loading}>
         <Form name="invoke" onFinish={onFinish} layout="vertical">
-          <Form.Item label="请求参数" name="userRequestParams">
-            <TextArea/>
+          <Form.Item label="请求参数" name="userRequestParams" initialValue={data?.parameterExample}>
+            <Input.TextArea />
           </Form.Item>
           <Form.Item wrapperCol={{span: 16}}>
             <Button type="primary" htmlType="submit">

@@ -135,6 +135,7 @@ declare namespace API {
     isDelete?: number;
     method?: string;
     name?: string;
+    parameterExample?: string;
     requestHeader?: string;
     requestParams?: string;
     responseHeader?: string;
@@ -182,6 +183,7 @@ declare namespace API {
     isDelete?: number;
     method?: string;
     name?: string;
+    parameterExample?: string;
     requestHeader?: string;
     requestParams?: string;
     responseHeader?: string;
@@ -451,6 +453,7 @@ declare namespace API {
   type UserUpdateRequest = {
     gender?: number;
     id?: number;
+    phone?: string;
     userAvatar?: string;
     userName?: string;
     userProfile?: string;
