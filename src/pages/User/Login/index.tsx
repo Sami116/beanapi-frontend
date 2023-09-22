@@ -1,25 +1,19 @@
-import Footer from '@/components/Footer';
-// import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import {userLoginUsingPOST} from '@/services/beanapi-backend/userController';
-import {
-  LockOutlined,
-  // MobileOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import {LockOutlined, MobileOutlined, UserOutlined} from '@ant-design/icons';
 import {
   LoginForm,
-  // ProFormCaptcha,
-  // ProFormCheckbox,
+  ProFormCaptcha,
+  ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import {useEmotionCss} from '@ant-design/use-emotion-css';
-import {FormattedMessage, Helmet, history, useIntl, useModel} from '@umijs/max';
+import {history, useModel} from '@umijs/max';
 import {Alert, message, Tabs} from 'antd';
 import React, {useState} from 'react';
-import {flushSync} from 'react-dom';
-import Settings from '../../../../config/defaultSettings';
-import {Link} from "umi";
-
+import {
+  sendCodeUsingGET, userLoginByEmailUsingPOST,
+  userLoginUsingPOST,
+} from '@/services/beanapi-backend/userController';
+import {Link} from '@@/exports';
+import {useEmotionCss} from "@ant-design/use-emotion-css";
 
 const LoginMessage: React.FC<{
   content: string;
@@ -35,12 +29,10 @@ const LoginMessage: React.FC<{
     />
   );
 };
-
 const Login: React.FC = () => {
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const {initialState, setInitialState} = useModel('@@initialState');
-
   const containerClassName = useEmotionCss(() => {
     return {
       display: 'flex',
@@ -53,80 +45,53 @@ const Login: React.FC = () => {
     };
   });
 
-  const intl = useIntl();
-
-  // const fetchUserInfo = async () => {
-  //   const userInfo = await initialState?.fetchUserInfo?.();
-  //   console.log(userInfo)
-  //   if (userInfo) {
-  //     flushSync(() => {
-  //       setInitialState((s) => ({
-  //         ...s,
-  //         currentUser: userInfo,
-  //       }));
-  //     });
-  //   }
-  // };
-
   const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
-      // 登录
-      const res = await userLoginUsingPOST({...values});
-      console.log(res.data)
+      let res;
+      if (type === 'account') {
+        // 登录
+        res = await userLoginUsingPOST({
+          ...values,
+        });
+      } else {
+        res = await userLoginByEmailUsingPOST({
+          ...values,
+        });
+      }
+      console.log(res);
       if (res.data) {
-        // await fetchUserInfo();
+        await setInitialState((s) => ({...s, loginUser: res.data}));
         const urlParams = new URL(window.location.href).searchParams;
+        await setUserLoginState(res.data);
         setTimeout(() => {
           history.push(urlParams.get('redirect') || '/');
-        }, 100)
-
-        setInitialState({
-          loginUser: res.data
-        });
-
+        },100)
         return;
       }
-
     } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
-      });
+      const defaultLoginFailureMessage = '登录失败，请重试！';
       console.log(error);
       message.error(defaultLoginFailureMessage);
     }
   };
   const {status, type: loginType} = userLoginState;
-
-  const showMessage = () => {
-    message.info('管理员联系方式QQ：1350229516');
-  };
-
-
   return (
     <div className={containerClassName}>
-      <Helmet>
-        <title>
-          {intl.formatMessage({
-            id: 'menu.login',
-            defaultMessage: '登录页',
-          })}
-          - {Settings.title}
-        </title>
-      </Helmet>
-      <div
-        style={{
-          flex: '1',
-          padding: '32px 0',
-        }}
-      >
+      <div>
         <LoginForm
+          // logo={<img alt="logo" src="/logo.svg" />}
           contentStyle={{
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          // logo={<img alt="logo" src="/logo.png" />}
-          title="BeanAPI开放平台"
+          title="Bean API"
+          subTitle={
+            <>
+              <p>
+                <b>API开放调用平台</b>
+              </p>
+            </>
+          }
           initialValues={{
             autoLogin: true,
           }}
@@ -141,21 +106,17 @@ const Login: React.FC = () => {
             items={[
               {
                 key: 'account',
-                label: intl.formatMessage({
-                  id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
-                }),
+                label: '账户密码登录',
+              },
+              {
+                key: 'email',
+                label: 'QQ邮箱登录',
               },
             ]}
           />
 
           {status === 'error' && loginType === 'account' && (
-            <LoginMessage
-              content={intl.formatMessage({
-                id: 'pages.login.accountLogin.errorMessage',
-                defaultMessage: '账户或密码错误(admin/ant.design)',
-              })}
-            />
+            <LoginMessage content={'错误的用户名和密码'}/>
           )}
           {type === 'account' && (
             <>
@@ -165,19 +126,11 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <UserOutlined/>,
                 }}
-                placeholder={intl.formatMessage({
-                  id: 'pages.login.username.placeholder',
-                  defaultMessage: '用户名',
-                })}
+                placeholder={'账号'}
                 rules={[
                   {
                     required: true,
-                    message: (
-                      <FormattedMessage
-                        id="pages.login.username.required"
-                        defaultMessage="请输入用户名!"
-                      />
-                    ),
+                    message: '账号是必填项！',
                   },
                 ]}
               />
@@ -187,48 +140,97 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <LockOutlined/>,
                 }}
-                placeholder={intl.formatMessage({
-                  id: 'pages.login.password.placeholder',
-                  defaultMessage: '密码',
-                })}
+                placeholder={'密码'}
                 rules={[
                   {
                     required: true,
-                    message: (
-                      <FormattedMessage
-                        id="pages.login.password.required"
-                        defaultMessage="请输入密码！"
-                      />
-                    ),
+                    message: '密码是必填项！',
+                  },
+                ]}
+              />
+            </>
+          )}
+
+          {status === 'error' && loginType === 'email' && <LoginMessage content="验证码错误"/>}
+          {type === 'email' && (
+            <>
+              <ProFormText
+                fieldProps={{
+                  size: 'large',
+                  prefix: <MobileOutlined/>,
+                }}
+                name="emailNum"
+                placeholder={'请输入QQ邮箱！'}
+                rules={[
+                  {
+                    required: true,
+                    message: '邮箱是必填项！',
                   },
                   {
-                    min: 8,
-                    type: 'string',
-                    message: '密码长度不能小于8位',
-                  }
+                    // pattern: /^1\d{10}$/,    手机号码正则表达式
+                    pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+                    message: '不合法的邮箱！',
+                  },
                 ]}
+              />
+              <ProFormCaptcha
+                fieldProps={{
+                  autoComplete: "new-password",
+                  size: 'large',
+                  prefix: <LockOutlined/>,
+                }}
+                captchaProps={{
+                  size: 'large',
+                }}
+                placeholder={'请输入验证码！'}
+                captchaTextRender={(timing, count) => {
+                  if (timing) {
+                    return `${count} ${'秒后重新获取'}`;
+                  }
+                  return '获取验证码';
+                }}
+                name="emailCaptcha"
+                phoneName="emailNum"
+                rules={[
+                  {
+                    required: true,
+                    message: '验证码是必填项！',
+                  },
+                ]}
+                onGetCaptcha={async (emailNum) => {
+                  const captchaType: string = 'login';
+                  const result = await sendCodeUsingGET({
+                    emailNum,
+                    captchaType,
+                  });
+                  if (result === false) {
+                    return;
+                  }
+                  message.success(result.data);
+                }}
               />
             </>
           )}
           <div
             style={{
-              marginBottom: 14,
+              marginBottom: 24,
             }}
           >
-            <Link to="/user/register">新用户注册</Link>
-            <a
-              onClick={showMessage}
+            <ProFormCheckbox noStyle name="autoLogin">
+              自动登录
+            </ProFormCheckbox>
+            <Link
               style={{
                 float: 'right',
-                marginBottom: 14,
               }}
+              to={'/user/register'}
             >
-              忘记密码请联系管理员
-            </a>
+              没有账号？去注册
+            </Link>
           </div>
         </LoginForm>
       </div>
-      <Footer/>
+      {/*<Footer />*/}
     </div>
   );
 };

@@ -47,6 +47,21 @@ export async function getUserInterfaceInfoByIdUsingGET(
   });
 }
 
+/** getFreeInterfaceCount POST /api/userInterfaceInfo/get/free */
+export async function getFreeInterfaceCountUsingPOST(
+  body: API.UpdateUserInterfaceInfoDTO,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean_>('/api/userInterfaceInfo/get/free', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** listUserInterfaceInfo GET /api/userInterfaceInfo/list */
 export async function listUserInterfaceInfoUsingGET(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
@@ -69,6 +84,21 @@ export async function listUserInterfaceInfoByPageUsingGET(
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponsePageUserInterfaceInfo_>('/api/userInterfaceInfo/list/page', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** getInterfaceInfoByUserId GET /api/userInterfaceInfo/list/userId */
+export async function getInterfaceInfoByUserIdUsingGET(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getInterfaceInfoByUserIdUsingGETParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseListUserInterfaceInfoVO_>('/api/userInterfaceInfo/list/userId', {
     method: 'GET',
     params: {
       ...params,

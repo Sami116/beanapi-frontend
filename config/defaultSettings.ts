@@ -17,7 +17,7 @@ const Settings: ProLayoutProps & {
   fixSiderbar: true,
   colorWeak: false,
   title: 'Bean API',
-  pwa: true,
+  pwa: false,
 }
 export default Settings;
 

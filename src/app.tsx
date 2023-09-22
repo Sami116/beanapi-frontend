@@ -1,14 +1,14 @@
 import Footer from '@/components/Footer';
-import { Question, SelectLang } from '@/components/RightContent';
-import { getLoginUserUsingGET } from '@/services/beanapi-backend/userController';
-import { LinkOutlined } from '@ant-design/icons';
-import { SettingDrawer } from '@ant-design/pro-components';
-import type { RunTimeLayoutConfig } from '@umijs/max';
-import { history, Link } from '@umijs/max';
-import { AvatarDropdown, AvatarName } from './components/RightContent/AvatarDropdown';
-import { requestConfig } from './requestConfig';
+import {getLoginUserUsingGET} from '@/services/beanapi-backend/userController';
+import {UserOutlined} from '@ant-design/icons';
+import {SettingDrawer} from '@ant-design/pro-components';
+import type {RunTimeLayoutConfig} from '@umijs/max';
+import {history} from '@umijs/max';
+import {AvatarDropdown, AvatarName} from './components/RightContent/AvatarDropdown';
+import {requestConfig} from './requestConfig';
+import {Avatar} from "antd";
 
-const isDev = process.env.NODE_ENV === 'development';
+// const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 /**
@@ -32,22 +32,24 @@ export async function getInitialState(): Promise<InitialState> {
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
+export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
   return {
-    // actionsRender: () => [<Question key="doc" />, <SelectLang key="SelectLang" />],
+    rightRender: (initialState) => {
+    },
     avatarProps: {
-      src: initialState?.loginUser?.avatar,
-      title: <AvatarName />,
+      src: initialState?.loginUser?.userAvatar,
+      title: <AvatarName/>,
       render: (_, avatarChildren) => {
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
+      icon: <UserOutlined/>
     },
     waterMarkProps: {
       content: initialState?.loginUser?.userName,
     },
-    footerRender: () => <Footer />,
+    footerRender: () => <Footer/>,
     onPageChange: () => {
-      const { location } = history;
+      const {location} = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.loginUser && location.pathname !== loginPath) {
         history.push(loginPath);
@@ -73,14 +75,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         width: '331px',
       },
     ],
-    // links: isDev
-    //   ? [
-    //       <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-    //         <LinkOutlined />
-    //         <span>OpenAPI 文档</span>
-    //       </Link>,
-    //     ]
-    //   : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,

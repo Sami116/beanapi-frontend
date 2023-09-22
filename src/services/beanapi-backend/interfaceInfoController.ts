@@ -122,6 +122,14 @@ export async function onlineInterfaceInfoUsingPOST(
   });
 }
 
+/** getSdk GET /api/interfaceInfo/sdk */
+export async function getSdkUsingGET(options?: { [key: string]: any }) {
+  return request<any>('/api/interfaceInfo/sdk', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 /** updateInterfaceInfo POST /api/interfaceInfo/update */
 export async function updateInterfaceInfoUsingPOST(
   body: API.InterfaceInfoUpdateRequest,
