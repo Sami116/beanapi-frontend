@@ -27,7 +27,9 @@ const LoginMessage: React.FC<{
 
 const Register: React.FC = () => {
   const [imageUrl, setImageUrl] = useState<any>(null);
-
+  const [userRegisterState, setUserRegisterState] = useState<API.RegisterResult>({});
+  const [type, setType] = useState<string>('register');
+  const {status, type: registerState} = userRegisterState;
 
   /**
    * 获取图形验证码
@@ -115,9 +117,7 @@ const Register: React.FC = () => {
       message.error(error.message);
     }
   };
-  const [userRegisterState, setUserRegisterState] = useState<API.RegisterResult>({});
-  const [type, setType] = useState<string>('register');
-  const {status, type: registerState} = userRegisterState;
+
 
 
 
@@ -134,7 +134,6 @@ const Register: React.FC = () => {
           title="Bean API"
           subTitle={
             <>
-              {/* eslint-disable-next-line react/no-unescaped-entities */}
               <p>
                 <b>API开放调用平台</b>
               </p>

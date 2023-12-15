@@ -3,7 +3,7 @@ import {ProLayoutProps} from '@ant-design/pro-components';
 /**
  * @name
  */
-const Settings: ProLayoutProps & {
+const settings: ProLayoutProps & {
   pwa?: boolean;
   logo?: string;
 } = {
@@ -19,5 +19,6 @@ const Settings: ProLayoutProps & {
   title: 'Bean API',
   pwa: false,
 }
-export default Settings;
+export default settings;
+
 

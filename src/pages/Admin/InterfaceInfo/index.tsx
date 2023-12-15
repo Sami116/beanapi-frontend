@@ -313,7 +313,9 @@ const TableList: React.FC = () => {
           ]}
           request={async (
             params,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             sort: Record<string, SortOrder>,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             filter: Record<string, React.ReactText[] | null>,
           ) => {
             const res: any = await listInterfaceInfoByPageUsingGET({

@@ -26,7 +26,7 @@ interface ResponseStructure {
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const requestConfig: RequestConfig = {
-  baseURL: 'http://localhost:8090',
+  baseURL: 'http://api.beanstd.cn:8090',
   withCredentials: true,
 
   // 请求拦截器
